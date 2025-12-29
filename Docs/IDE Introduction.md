@@ -782,7 +782,7 @@ graph TD;
     D --> G[Execute Loop Actions]
     E --> G[Execute Loop Actions]
     F --> G[Execute Loop Actions]
-```"
+```
  # Callback
  # # Detailed Explanation of Callback Mechanism
 
@@ -1475,7 +1475,7 @@ D --> E[Open Test Publish Version Play URL]
 E --> F[Perform Deployment Operation]
 F --> G[Bind Official URL to Latest Version URL]
 G --> H[Deployment Successful]
-```"
+```
  # Preview release domain configuration.
  # # What is a Domain Name
 
@@ -1725,7 +1725,7 @@ graph TD;
     EnterVersionManagement-->SubmitForReview;
     SubmitForReview-->AwaitApproval;
     AwaitApproval-->Publish;
-```"
+```
  # Configuration of Mini Program Platform
 
 ## # Set Legal Domains
@@ -1868,7 +1868,7 @@ graph TD;
     F --> G[Notification Center Notifies Result]
     G --> H{Review Result}
     H -->|Approved| I[Confirm Publishing]
-```"
+```
  # Create a mini program.
 
 ## # 1. Register an Alipay Account
@@ -1953,7 +1953,7 @@ graph TD
     B --> C[Click Add]
     C --> D[Search for Alipay account]
     D --> E[Invite the corresponding member to join the development team]
-```"
+```
  # Upload Mini Program
  # # Uploading Mini Programs
 
@@ -2184,7 +2184,7 @@ graph TD
   D --> E[Local Testing]
   E --> F[Submit for Platform Review]
   F --> G[Go Live with Application]
-```"
+```
  # Windows/Mac Application Deployment
 
 ## # Windows Application Deployment
@@ -2235,7 +2235,7 @@ C --> D[Initiate compilation]
 D --> E[Download application package upon successful compilation]
 E --> F[Save locally and double-click to install]
 F --> G[Run .app file for testing]
-```"
+```
  # Cloud Platform Application Services
  # # Overview
 
@@ -2333,7 +2333,7 @@ graph TD
     K -->|Deploy| M[Upload Code to Create Development Version]
     M --> N[Compile and Start Preview]
     N --> O[Set as Experience Version or Review and Launch]
-```"
+```
  # High Concurrency Application
 
 **Concurrency Limitations on Public Platforms**
@@ -2976,7 +2976,7 @@ After modifying the config file, restart the service and refresh the case to com
 Finally, review the command to restart the service:
 ```
 sudo systemctl restart VisualLogic
-```"
+```
  # Overview of Private Deployment Function
 
 ## # Function Overview
@@ -3057,7 +3057,7 @@ C --> E
 D --> F
 E --> F
 F --> G
-```"
+```
  # Load Balancing and Auto Scaling
 
 ## # Objectives and Preparation
@@ -3160,7 +3160,7 @@ graph TD
     D --> G
     E --> G
     F --> G
-```"
+```
  # Container deployment (Docker)
 
 ## # Objectives and Preparations
@@ -3429,7 +3429,7 @@ graph TD;
     J --> K[Drag in Case Package]
     K --> L[Restart ivxbase.exe]
     L --> M[Access Case in Browser]
-```"
+```
  # Limitations and Cognitive Misconceptions
 
 ## # Limitations of VisualLogic Development
@@ -3634,7 +3634,7 @@ B --> F[Microservices]
 F --> G[Public Services]
 F --> H[In-group Microservices]
 F --> I[Microservices under Account]
-```"
+```
  # Copyright ownership of VisualLogic applications? And copyright application?
  # # VisualLogic Applications Copyright Ownership and Copyright Application
 
@@ -3926,7 +3926,7 @@ graph TD
     Open Editing Shell Application --> Publish to Cloud Mini-module Library
     Download from Cloud Mini-module Library --> Add to Local Definition Pool
     Local Definition Pool Update --> Instance Update in Object Tree
-```"
+```
  # What is a custom component?
  # # Feature Overview
 
@@ -3991,7 +3991,7 @@ graph TD;
     C --> G[Add VisualLogic Components for Preview]
     G --> H[Add Button]
     H --> I[Trigger Pop-up Custom Component]
-```"
+```
  # Component Development Workflow
 
 ## # Composition of the Component Library
@@ -4403,7 +4403,7 @@ A --> D[Scheduled Execution]
 D --> E[Implement Scheduled Tasks with crontab]
 E --> F[Set crontab Scheduled Command]
 F --> G[Delete Scheduled Tasks with crontab -r]
-```"
+```
  # Configuration file settings
  # # 1. Comprehensive Overview of the config File
 
@@ -4582,7 +4582,7 @@ graph TD
     C --> D[Save config File]
     D --> E[Restart VisualLogicBase]
     E --> F[Configuration Takes Effect]
-```"
+```
  # Creating and Configuring DBO
 
 ### # Add DBO Component
@@ -5071,44 +5071,6 @@ graph TD;
 The above flow illustrates how the VisualLogic encryption component can generate and verify user passwords. Throughout the process, there are no complex operational steps, only the need to call the methods provided by the component, reflecting full user-friendliness and security.
  # WeChat Authorization Login
 
-### VisualLogic中的微信授权功能
-
-VisualLogic默认提供了微信公众号授权登录的功能，用户可以通过配置中心开启授权功能，以便在应用初始化时进行授权。这一过程可选是否获取用户的头像和昵称。当开启此选项时，应用启动后会跳转至授权页面，用户可能会遇到短暂的白屏和“登录中”的加载提示。如果选择获取头像和昵称，用户还将看到一个授权提示窗口。
-
-然而，为了提供更加灵活的用户体验，在某些场景下，我们希望仅在需要时触发授权过程。这时候，可以借助VisualLogic的后台微信组件来实现微信的异步授权服务。
-
-### 实现异步授权的步骤
-
-1. **配置接口：** 首先，在接口配置中启用微信接口，并输入微信公众号的appid和app secret。切记不要开启授权。需要注意的是，进行异步授权必须使用自定义的微信公众号，网页授权域名要相应设置为`v4rel.h5sys.cn`或`v4pre.h5sys.cn`（如果使用预览地址测试）。
-2. **添加前台组件：** 在前端页面中，添加“微信公众号”组件。通过触发“跳转授权页”的动作，用户界面会重定向到应用地址，并携带URL参数`code`。随后，可以在页面中展示获取到的`code`。
-3. **获取用户信息：** 在后台，添加微信组件，通过获取的`code`来获取用户信息，包括用户的头像、昵称、openid等。
-4. **处理access_token：** 由于每个`code`只能使用一次来获取用户信息，因此需要缓存access_token。如果需要再次获取用户信息，可以通过access_token来检索，前提是需要传入当前用户的openid。后台微信组件提供了直接获取access_token的方法。
-
-```mermaid
-graph LR
-A[配置微信公众号] --> B[启用微信接口]
-B --> C[添加前台微信公众号组件]
-C --> D[通过code获取用户信息]
-D --> E[缓存access_token]
-```
-
-### VisualLogic和微信公众号平台的配置说明
-
-在使用VisualLogic进行开发时，如果H5应用部署在微信平台且需要获取用户的昵称和头像，需在配置界面勾选“开启授权”。若自有公众号，可以在配置界面中填入公众号的appID和appSecret，并设置自定义授权域名（例如`v4rel.h5sys.cn`）。
-
-如果在微信中出现错误页面，可能是因为微信公众号后台的域名配置不当。解决此问题的方法是，在微信公众平台上设置合法域名，包括业务域名和JS接口安全域名的配置，这一步只对企业版公众号开放。
-
-### 自定义授权域名的意义
-
-使用自定义授权域名可以节省网页授权域名的空间，因为单个微信公众号下的网页授权域名限制为三个。因此，建议在使用自定义公众号时，启用自定义授权域名功能，以避免授权域名下的所有作品因违规操作导致无法访问。
-
-为了使用自定义域名，需在配置后台DNS指向`v4rel.h5sys.cn`。设置时需确保应用发布的域名和授权域名一致，或者指向一个云服务商配置的标准名称，以保证访问的稳定性和安全性。
-
-### 微信接口的相关配置
-
-在微信接口配置中，需要绑定服务号并修改相关设置。通过为服务号配置绑定的appid和appsecret以及设置授权域名，可以确保在微信中运行的案例正常访问，从而实现与微信服务号的无缝连接。
-
-通过这些详细的步骤和配置，使得VisualLogic在进行微信授权登录时展现了其强大的组件化和灵活性优势，使开发人员可以方便地实现各种登录场景应用。"
  # WeChat Pay
 
 ### WeChat Payment Technical Documentation
@@ -5973,7 +5935,7 @@ graph TD
     F --> G[Upload File in VisualLogic Editor]
     G --> H[Select HDR Environmental Light File]
     H --> I[Activate upon Successful Upload]
-```"
+```
  # Integrating External Systems & Resources
 
 ### # Overview
@@ -6164,7 +6126,7 @@ A[Install InfluxDB] --> B[Install Influx CLI]
 B --> C[Initialize InfluxDB Settings]
 C --> D[Modify Configuration File]
 D --> E[Query Logs]
-```"
+```
  # Common issues in DBO
 
 ### # VisualLogic DBO Connection Overview
@@ -6345,7 +6307,7 @@ D --> E[Set templateConfig]
 E --> F[Resend SMS]
 B -- No --> G[Configuration successful]
 G --> F
-```"
+```
  # Configure Reverse Proxy: Caddy
 
 ## # Introduction to Caddy
@@ -7092,7 +7054,7 @@ graph TD
     G --> H[Select HTTPS Protocol and Port 443]
     H --> I[Bind SSL Certificate and Server Group]
     I --> J[Complete and Access through HTTPS Domain + Path]
-```"
+```
  # One-Click Deployment Guide
 
 ## # Goals and Preparations
@@ -8509,7 +8471,7 @@ B --> C[Object Tree Display]
 C --> D[Properties Panel Adjustment]
 D --> E[Event Icon Add Event]
 E --> F[Save or Reversion] 
-```"
+```
  # UI construction and layout design
 
 ### # Overview
@@ -10735,7 +10697,7 @@ graph TB
   B --> C[Confirm Usage Scope]
   C --> D[View Published Application]
   D --> E[Manage Historical Versions]
-```"
+```
  # ByteDance Mini Program
  # # Creating a ByteDance Mini Program
 
@@ -10780,7 +10742,7 @@ graph TB
   E --> F[Test Functions]
   F --> G[Modify Configuration Files]
   G --> H[Upload Mini Program]
-```"
+```
  # Deploy group applications
  # # Group Application Private Deployment
 
@@ -10957,7 +10919,7 @@ graph TD
     F --> H(Affect External Objects)
     G --> I(Normal VisualLogic Component)
     H --> I
-```"
+```
  # Create snippet
 
 ## # Encapsulating Frontend Code Snippets
