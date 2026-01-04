@@ -627,3 +627,271 @@ $postContent(STRING) = "# Featured Article\n\n## Introduction\nThis is a great a
 ```
 
 ---
+
+## 12. ButtonContainer - Composite Button
+
+**Purpose**: Create compound buttons by combining multiple child components (Icon + Text).
+
+**Use Cases**:
+
+- Icon + text buttons
+- Complex button layouts
+- Custom button designs
+- Action buttons with multiple elements
+
+**Key Properties**:
+
+
+| Property   | Type | Description            |
+| ---------- | ---- | ---------------------- |
+| `disabled` | BOOL | Disable button if true |
+
+**Special Note**: Cannot have `value` property; all content via child components.
+
+**Common Events**:
+
+- `@click()` - Button clicked
+
+**VL Syntax Example**:
+
+```vl
+# Frontend Global Vars
+$isDownloading(BOOL) = false
+$uploadProgress(INT) = 0
+
+# Frontend Tree
+<Block-ActionBar>
+-<ButtonContainer-Download> disabled:$isDownloading StyleClass:ButtonPrimary
+--<Row-Content> gap:"8px"
+---<Icon-DownloadIcon> fontSet:"fa-solid-900" content:"f019" font-size:"16px"
+---<Text-Label> value:"Download Report"
+-<ButtonContainer-Upload> StyleClass:ButtonSecondary
+--<Row-Content> gap:"8px"
+---<Icon-UploadIcon> fontSet:"fa-solid-900" content:"f093" font-size:"16px"
+---<Text-Label> value:"Upload File"
+-<ButtonContainer-Settings> StyleClass:ButtonIcon
+--<Icon-SettingsIcon> fontSet:"fa-solid-900" content:"f013" font-size:"20px"
+
+# Frontend Event Handlers
+
+<ButtonContainer-Download>.@click()
+-IF $isDownloading
+--RETURN
+-$isDownloading = true
+-downloadReport($reportId) -> _result
+-$isDownloading = false
+-IF _result.success
+--<SysUI>.showToast("Report downloaded successfully", "success")
+-ELSE
+--<SysUI>.showToast("Download failed", "error")
+
+<ButtonContainer-Upload>.@click()
+-<SysFile>.browseFile(false, "application/*") -> _fileResult
+-IF _fileResult.name != ""
+--uploadFile(_fileResult.file) -> _uploadResult
+--IF _uploadResult.success
+---<SysUI>.showToast("File uploaded successfully", "success")
+
+<ButtonContainer-Settings>.@click()
+-<ClientUtils>.switchRoute("settings")
+```
+
+---
+
+## Common Properties for All UI Components
+
+### Non-Read-Only Properties
+
+
+| Property | Type | Default | Description                                    |
+| -------- | ---- | ------- | ---------------------------------------------- |
+| `show`   | BOOL | true    | Show/hide component (display: none when false) |
+
+### Read-Only Properties (Can be accessed in methods/functions)
+
+
+| Property       | Type  | Description                                                     |
+| -------------- | ----- | --------------------------------------------------------------- |
+| `offsetWidth`  | FLOAT | Element's full width (content + padding + border)               |
+| `offsetHeight` | FLOAT | Element's full height (content + padding + border)              |
+| `clientWidth`  | FLOAT | Element's visible width (content + padding)                     |
+| `clientHeight` | FLOAT | Element's visible height (content + padding)                    |
+| `scrollWidth`  | FLOAT | Element's full content width                                    |
+| `scrollHeight` | FLOAT | Element's full content height                                   |
+| `offsetLeft`   | FLOAT | Element's left position relative to nearest positioned ancestor |
+| `offsetTop`    | FLOAT | Element's top position relative to nearest positioned ancestor  |
+
+### Common Methods
+
+
+| Method                    | Description                                            |
+| ------------------------- | ------------------------------------------------------ |
+| `focus()`                 | Make component gain focus                              |
+| `blur()`                  | Make component lose focus                              |
+| `getBoundingClientRect()` | Get component's position and size relative to viewport |
+
+---
+
+## Common Events for All UI Components
+
+
+| Event               | Parameters | Description                        |
+| ------------------- | ---------- | ---------------------------------- |
+| `@init()`           | None       | Component initialization completes |
+| `@click(event)`     | event      | Component clicked                  |
+| `@mouseOn(event)`   | event      | Mouse enters component             |
+| `@mouseOut(event)`  | event      | Mouse leaves component             |
+| `@mouseDown(event)` | event      | Mouse button down on component     |
+| `@mouseUp(event)`   | event      | Mouse button up on component       |
+
+---
+
+## Best Practices for Basic Components
+
+### 1. **Unidirectional Data Flow**
+
+```vl
+# ✅ CORRECT: Bind variable to property, update variable in events
+<Input-Email> value:$email
+<Input-Email>.@input(newValue)
+-$email = newValue
+
+# ❌ WRONG: Try to directly modify component property
+<Input-Email>.value = newEmail  # Not allowed!
+```
+
+### 2. **Input Component Real-Time Updates**
+
+```vl
+# ✅ CORRECT: Use @input for real-time updates
+<Input-SearchBox>.@input(newValue)
+-$searchKeyword = newValue
+-searchProducts($searchKeyword) -> _results
+-$results = _results.data
+
+# ❌ WRONG: Rely only on @change (won't update until blur)
+<Input-SearchBox>.@change(newValue)
+-searchProducts(newValue)  # Too slow for real-time search
+```
+
+### 3. **Form Validation Pattern**
+
+```vl
+# Frontend Global Vars
+$email(STRING) = ""
+$password(STRING) = ""
+
+# Frontend Derived Vars
+$isFormValid(BOOL) = ($email.includes("@") && $password.length >= 6)
+
+# Frontend Tree
+<Input-Email> value:$email type:"email"
+<Input-Password> value:$password type:"password"
+<Button-Login> disabled:(!$isFormValid)
+
+# Frontend Event Handlers
+<Input-Email>.@input(newValue)
+-$email = newValue
+
+<Input-Password>.@input(newValue)
+-$password = newValue
+```
+
+### 4. **Button Loading State**
+
+```vl
+# Frontend Global Vars
+$isSubmitting(BOOL) = false
+
+# Frontend Tree
+<Button-Submit> value:($isSubmitting ? "Submitting..." : "Submit") disabled:$isSubmitting
+
+# Frontend Event Handlers
+<Button-Submit>.@click()
+-$isSubmitting = true
+-submitForm($formData) -> _result
+-$isSubmitting = false
+-IF _result.success
+--<SysUI>.showToast("Success!", "success")
+```
+
+### 5. **Conditional Display**
+
+```vl
+# ✅ CORRECT: Use If container for conditional rendering
+<If-HasItems> conditions:($items.length > 0)
+--<For-ItemList> sourceArray:$items loopVar:[_item0, _index0]
+---<Block-Item>
+<If-EmptyState> conditions:($items.length == 0)
+--<Text-Empty> value:"No items found"
+
+# ⚠️ AVOID: Using show property for complex conditional logic
+<Block-List> show:($items.length > 0)  # Components still in DOM, just hidden
+```
+
+---
+
+## Quick Reference - Common Patterns
+
+### Search Input Pattern
+
+```vl
+# Frontend Global Vars
+$searchQuery(STRING) = ""
+$searchResults([{}]) = []
+$isSearching(BOOL) = false
+
+# Frontend Tree
+<Input-Search> value:$searchQuery placeholder:"Search..." type:"text"
+<If-SearchResults> conditions:($searchResults.length > 0)
+--<For-Results> sourceArray:$searchResults loopVar:[_result0, _index0]
+---<Block-ResultItem> # Display each result
+
+# Frontend Event Handlers
+<Input-Search>.@input(newValue)
+-$searchQuery = newValue
+-IF newValue == ""
+--$searchResults = []
+--RETURN
+-$isSearching = true
+-search(newValue) -> _result
+-$isSearching = false
+-$searchResults = _result.data
+```
+
+### Form Submission Pattern
+
+```vl
+# Frontend Global Vars
+$formData({name:STRING,email:STRING}) = {name:"",email:""}
+$formErrors({name:STRING,email:STRING}) = {name:"",email:""}
+$isSubmitting(BOOL) = false
+
+# Frontend Derived Vars
+$isFormValid(BOOL) = ($formData.name != "" && $formData.email.includes("@"))
+
+# Frontend Tree
+<Input-Name> value:$formData.name
+<Input-Email> value:$formData.email
+<Button-Submit> disabled:(!$isFormValid || $isSubmitting)
+
+# Frontend Event Handlers
+<Input-Name>.@input(newValue)
+-$formData.name = newValue
+
+<Input-Email>.@input(newValue)
+-$formData.email = newValue
+
+<Button-Submit>.@click()
+-validateForm($formData) -> _validation
+-IF !_validation.success
+--$formErrors = _validation.errors
+--<SysUI>.showToast("Please correct the errors", "error")
+--RETURN
+-$isSubmitting = true
+-submitForm($formData) -> _result
+-$isSubmitting = false
+-IF _result.success
+--<SysUI>.showToast("Form submitted successfully", "success")
+--resetForm()
+```
