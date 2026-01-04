@@ -515,3 +515,115 @@ $chartData({}) = {
 <Block-DashboardSection>
 -<Text-Title> value:"Sales Dashboard" StyleClass:HeadingLarge
 -<Block-ChartContainer> padding
+
+## 10. MarkdownEdit - Markdown Editor
+
+**Purpose**: Allow users to edit Markdown-formatted text with built-in toolbar.
+
+**Use Cases**:
+- Blog post editing
+- Documentation creation
+- Comment with formatting
+- Rich text notes
+- Content authoring
+
+**Key Properties**:
+| Property | Type | Description |
+|----------|------|-------------|
+| `value` | STRING | Markdown content |
+| `disabled` | BOOL | Disable editing if true |
+| `placeholder` | STRING | Placeholder text when empty |
+
+**Common StyleClasses**:
+- Default editor styling (includes built-in toolbar)
+
+**Common Events**:
+- `@change(newValue, oldValue)` - Content changes after blur
+- `@input(newValue)` - Real-time content changes
+- `@focus()` - Editor gains focus
+- `@blur()` - Editor loses focus
+- `@select(value)` - Text selection in editor
+
+**VL Syntax Example**:
+
+```vl
+# Frontend Global Vars
+$articleContent(STRING) = "# Welcome to our blog\n\nStart writing your article here..."
+$isSaving(BOOL) = false
+$lastSavedTime(TIMESTAMP) = SYSENV.currentTime
+
+# Frontend Tree
+<Block-BlogEditor>
+-<Block-Header>
+--<Text-Title> value:"Write Article" StyleClass:HeadingLarge
+--<Text-LastSaved> value:("Last saved: " + $lastSavedTime.format("HH:mm")) StyleClass:TextSecondary
+-<MarkdownEdit-Editor> value:$articleContent placeholder:"Write your article in Markdown..." StyleClass:EditorDefault
+-<Block-Actions>
+--<Button-Save> value:"Save Article" disabled:$isSaving StyleClass:ButtonPrimary
+--<Button-Preview> value:"Preview" StyleClass:ButtonSecondary
+--<Button-Discard> value:"Discard" StyleClass:ButtonText
+
+# Frontend Event Handlers
+
+<MarkdownEdit-Editor>.@input(newValue)
+-$articleContent = newValue
+
+<Button-Save>.@click()
+-$isSaving = true
+-saveArticle($articleContent) -> _result
+-$isSaving = false
+-IF _result.success
+--$lastSavedTime = SYSENV.currentTime
+--<SysUI>.showToast("Article saved successfully", "success")
+-ELSE
+--<SysUI>.showToast(_result.message, "error")
+
+<Button-Preview>.@click()
+-<ClientUtils>.switchRoute("preview")
+
+<Button-Discard>.@click()
+-<SysUI>.showModal("Discard Changes", "Are you sure you want to discard unsaved changes?") -> _confirm
+-IF _confirm.confirm
+--<ClientUtils>.switchRoute("articles")
+```
+---
+## 11. Markdown - Markdown Renderer
+
+**Purpose**: Render and display Markdown text as formatted HTML.
+
+**Use Cases**:
+
+- Display blog posts
+- Render documentation
+- Show formatted comments
+- Display README files
+- Render rich text content
+
+**Key Properties**:
+
+
+| Property | Type   | Description             |
+| -------- | ------ | ----------------------- |
+| `value`  | STRING | Markdown text to render |
+
+**VL Syntax Example**:
+
+```vl
+# Frontend Global Vars
+$postContent(STRING) = "# Featured Article\n\n## Introduction\nThis is a great article about VL framework.\n\n### Key Points\n- Easy to learn\n- Powerful features\n- Great community"
+
+# Frontend Tree
+<Block-ArticleView>
+-<Block-Header>
+--<Text-Title> value:"Featured Article" StyleClass:HeadingXL
+--<Text-Author> value:"Published by Jane Doe" StyleClass:TextSecondary
+--<Text-Date> value:"2024-01-15" StyleClass:TextTertiary
+-<Divider-Header> StyleClass:DividerDefault
+-<Markdown-Content> value:$postContent StyleClass:MarkdownDefault
+-<Divider-Footer> StyleClass:DividerDefault
+-<Block-Actions>
+--<Button-Share> value:"Share" StyleClass:ButtonSecondary
+--<Button-Save> value:"Save" StyleClass:ButtonSecondary
+```
+
+---
